@@ -1,16 +1,20 @@
 import {NextFunction, Request, Response} from 'express';
 import { check, param, query, validationResult } from 'express-validator';
-import { generateStudentId, validatePropertyErros } from '../utils/utils';
+import { generateStudentId } from '../utils/utils';
 import { Student, StudentDocument } from '../models/student.model';
 import { NativeError } from 'mongoose';
 import constants from '../utils/constants';
 
-export const saveStudent = async (req: Request, res: Response) => {
+export const saveStudent = async (req: Request, res: Response, next: NextFunction) => {
     await check('firstName').exists().withMessage('required value').run(req);
     await check('lastName').exists().withMessage('required value').run(req);
     await check('age').exists().withMessage('required value').isNumeric().run(req);
 
-    validatePropertyErros(req, res);
+    const errors = validationResult(req);
+    if (errors) {
+        res.status(400).json(errors.array());
+        return;
+    }
 
     const student = Student.build({
         studentId: generateStudentId(),
@@ -29,7 +33,11 @@ export const getStudent = async (req: Request, res: Response, next: NextFunction
     await query('studentId').exists().withMessage('required value')
         .matches(constants.STUDENT_ID_REGEX).withMessage('invalid value').run(req);
 
-    validatePropertyErros(req, res);
+    const errors = validationResult(req);
+    if (errors) {
+        res.status(400).json(errors.array());
+        return;
+    }
 
     const studentId = req.query.studentId as string;
     Student.findOne({studentId}, (err: NativeError, student: StudentDocument) => {
@@ -50,7 +58,11 @@ export const updateStudent = async (req: Request, res: Response, next: NextFunct
     await param('studentId').matches(constants.STUDENT_ID_REGEX)
         .withMessage('invalid value').run(req);
 
-    validatePropertyErros(req, res);
+    const errors = validationResult(req);
+    if (errors) {
+        res.status(400).json(errors.array());
+        return;
+    }
 
     const studentId = req.params.studentId;
     const updateStudent = {
@@ -76,7 +88,11 @@ export const mergeStudent = async (req: Request, res: Response, next: NextFuncti
     await param('studentId').matches(constants.STUDENT_ID_REGEX)
         .withMessage('invalid value').run(req);
 
-    validatePropertyErros(req, res);
+    const errors = validationResult(req);
+    if (errors) {
+        res.status(400).json(errors.array());
+        return;
+    }
 
     const studentId = req.params.studentId;
     const updateStudent = {
@@ -102,7 +118,11 @@ export const deleteStudent = async (req: Request, res: Response, next: NextFunct
     await param('studentId').matches(constants.STUDENT_ID_REGEX)
         .withMessage('invalid value').run(req);
 
-    validatePropertyErros(req, res);
+    const errors = validationResult(req);
+    if (errors) {
+        res.status(400).json(errors.array());
+        return;
+    }
 
     const studentId = req.params.studentId;
     Student.findOneAndDelete({studentId}, undefined, (err: NativeError, student: StudentDocument) => {
