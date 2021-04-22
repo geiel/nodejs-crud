@@ -14,4 +14,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(router);
 
+app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+    res.status(500).send(error);
+});
+
 export default app;
