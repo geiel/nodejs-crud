@@ -21,6 +21,19 @@ describe('POST /students', () => {
     });
 });
 
+describe('POST /students', () => {
+    it('it should return a bad request for age validation', done => {
+        request(app).post('/students')
+            .send({
+                firstName: 'Geiel',
+                lastName: 'Peguero',
+                age: '23s'
+            })
+            .expect(400)
+            .then(done());
+    });
+});
+
 describe('GET /students', () => {
     it('it should get a student', done => {
         request(app).get('/students')

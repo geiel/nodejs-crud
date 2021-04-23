@@ -1,13 +1,24 @@
 import express from "express";
-import { saveStudentValidation, studentIdExistValidation, studentAgeValidation } from "../controllers/student.validation";
+import { 
+    saveStudentValidation, 
+    updateStudentValidation, 
+    mergeStudentValidation, 
+    deleteStudentValidation, 
+    getStudentValidation 
+} from "../validations/student.validation";
 import * as studentController from "../controllers/student.controller";
+import validations from "../validations/validations";
 
 const router = express.Router();
 
-router.post('/students', saveStudentValidation, studentController.saveStudent);
-router.get('/students', studentIdExistValidation, studentController.getStudent);
-router.put('/students/:studentId', [...studentIdExistValidation, ...studentAgeValidation] ,studentController.updateStudent);
-router.patch('/students/:studentId', [...studentIdExistValidation, ...studentAgeValidation] ,studentController.mergeStudent);
-router.delete('/students/:studentId', studentIdExistValidation ,studentController.deleteStudent);
+router.post('/students', validations(saveStudentValidation), studentController.saveStudent);
+
+router.get('/students', validations(getStudentValidation), studentController.getStudent);
+
+router.put('/students/:studentId', validations(updateStudentValidation), studentController.updateStudent);
+
+router.patch('/students/:studentId', validations(mergeStudentValidation), studentController.mergeStudent);
+
+router.delete('/students/:studentId', validations(deleteStudentValidation), studentController.deleteStudent);
 
 export default router;

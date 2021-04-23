@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 app.use(router);
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+    console.log(error);
     res.status(500).send(error);
 });
 
